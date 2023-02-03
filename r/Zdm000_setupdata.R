@@ -54,6 +54,23 @@ part[, country := factor(country, levels = country_levs, labels = country_labs)]
 
 part[, table(country)]
 
+## High risk
+
+part[, part_high_risk := ifelse(part_high_risk_v2 == "yes" , "yes", "no")]
+part[is.na(part_high_risk), part_high_risk := "unknown"]
+
+hr_levs <- c("yes", "no", "unknown")
+hr_labs <- c("Yes", "No", "Unknown")
+
+part[, part_high_risk := factor(part_high_risk, levels = hr_levs, labels = hr_labs)]
+
+part[is.na(part_face_mask), part_face_mask := "unknown"]
+
+fm_levs <- c("yes", "no", "unknown")
+fm_labs <- c("Yes", "No", "Unknown")
+
+part[, part_face_mask := factor(part_face_mask, levels = fm_levs, labels = fm_labs)]
+
 # Merge on total contacts ------------------------------------------------------
 p_cnts <- qs::qread('../comix/data/part_cnts.qs')
 

@@ -16,11 +16,9 @@ dt <- qs::qread('data/wrapup_part_cnts.qs')
 # Filter to needed vars ---------------------------------------------------
 ## At the end put all these at the begining
 
-## Age, Gender, HOusehold size, day of week, country, High risk, Face mask wearing
+## Age, Gender, Household size, day of week, country, High risk, Face mask wearing
 ## Employed, attending work
 
-
-dt[, part_high_risk := ifelse(part_high_risk_v2 == "yes" , "yes", "no")]
 
 dt <- dt[, .(
   part_age_group, 
@@ -73,6 +71,18 @@ per_age_adult   <- get_perc(dta[sample_type == "adult"], "part_age_group")
 per_gen   <- get_perc(dta, "part_gender")
 per_hh    <- get_perc(dta, "hh_size_group")
 per_day   <- get_perc(dta, "weekday")
+per_hr <- get_perc(dta, "part_high_risk")
+per_fm <- get_perc(dta, "part_face_mask")
+
+
+mean_cnt <- dta[, .(text = paste0(
+  formatC(mean(n_cnt), digits = 1, format = "f"),
+  " (",
+  formatC(sd(n_cnt), digits = 1, format = "f"),
+  ")"
+  )
+  ),
+  by = country]
 
 
 
@@ -86,7 +96,9 @@ row_age_adult   <- dcast(per_age_adult, get ~ country, value.var = "text")
 row_gen   <- dcast(per_gen, get ~ country, value.var = "text")
 row_hh    <- dcast(per_hh, get ~ country, value.var = "text")
 row_day   <- dcast(per_day, get ~ country, value.var = "text")
-
+row_hr   <- dcast(per_hr, get ~ country, value.var = "text")
+row_fm   <- dcast(per_fm, get ~ country, value.var = "text")
+row_cnt <- dcast(mean_cnt, . ~ country)
 
 row_count[, All := formatC(All, big.mark = ",")] 
 row_count[, UK  := formatC(UK, big.mark = ",")] 
@@ -113,6 +125,9 @@ row_4   <- make_row(row_age_adult, cat = "Age group (Adult)", val = row_age_adul
 row_5   <- make_row(row_gen, cat = "Gender", val = row_gen$get, top_row = TRUE)
 row_6   <- make_row(row_hh, cat = "Household size", val = row_hh$get, top_row = TRUE)
 row_7   <- make_row(row_day, cat = "Day of week", val = row_day$get, top_row = TRUE)
+row_8   <- make_row(row_hr, cat = "High risk", val = row_hr$get, top_row = TRUE)
+row_9   <- make_row(row_fm, cat = "Face mask", val = row_fm$get, top_row = TRUE)
+row_10   <- make_row(row_cnt, cat = "Contacts mean (sd)", "")
 
 tab1 <- rbind(row_1, 
       row_2,
@@ -120,9 +135,14 @@ tab1 <- rbind(row_1,
       row_4,
       row_5,
       row_6,
-      row_7
+      row_7,
+      row_8,
+      row_9,
+      row_10
       ) %>% 
   flextable()
+
+tab1
 
 
 print(tab1, preview = "docx")
