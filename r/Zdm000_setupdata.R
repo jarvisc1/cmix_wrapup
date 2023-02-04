@@ -90,7 +90,7 @@ dt[, n_cnt_workschool := pmin(n_cnt_work + n_cnt_school, 50)]
 
 ## Save locally
 qs::qsave(part, file = "data/wrapup_part.qs")
-qs::qsave(contacts, file = "data/wrapup_part.qs")
+qs::qsave(contacts, file = "data/wrapup_contacts.qs")
 qs::qsave(dt, file = "data/wrapup_part_cnts.qs")
 qs::qsave(dt_nocap, file = "data/wrapup_part_cnts_nocap.qs")
 

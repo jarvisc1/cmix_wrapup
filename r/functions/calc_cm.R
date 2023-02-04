@@ -112,7 +112,7 @@ calc_cm <- function(parts_ , conts_, max_ = 1000, weeks_range = 1:30, param = "m
     eg = merge(eg_weekday, eg_weekend, by=c('age_group', 'age_group_cont'), suffixes = c('_weekday', '_weekend'))
     eg[,means := (means_weekday*(5./7.) + means_weekend*(2./7.))]
     
-    eg_props = symetricise_matrix(eg, popdata_, breaks)
+    eg_props = symetricise_matrix(eg, pop_data_, breaks)
     egs[[i]] <- eg_props
   }
   return(egs)
