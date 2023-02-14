@@ -167,7 +167,7 @@ calc_cm_stan <- function(parts_ , conts_, max_ = 1000, popdata_totals, weeks_ran
 
 
 
-calc_cm_bs <- function(parts_ , conts_, max_ = 1000, popdata_totals, weeks_range=23:33, outfolder='outputs/regular/', bs = 1){
+calc_cm_bs <- function(parts_ , conts_, max_ = 1000, pop_data_ = popdata_totals, weeks_range=23:33, outfolder='outputs/regular/', bs = 1){
   
   
   conts_weekday = conts_[!weekday %in% c('Saturday', 'Sunday')]
@@ -198,7 +198,7 @@ calc_cm_bs <- function(parts_ , conts_, max_ = 1000, popdata_totals, weeks_range
     mus = (outs_weekend[[2]] * 2./7) + (outs_weekday[[2]] * 5./7)
     
     
-    eigs_symats = get_eigs_from_means(data.table(outs_weekday[[1]]), mus, popdata_totals, breaks)
+    eigs_symats = get_eigs_from_means(data.table(outs_weekday[[1]]), mus, pop_data_, breaks)
     filename_primer = paste0(outfolder, format(lubridate::today(),"%Y%m%d" ),'_cap', max_, '_nwks', length(weeks),'_sr', week, '_bs_',bs)
     qs::qsave(eigs_symats[[1]], paste0(filename_primer, 'eigs.qs') )
     qs::qsave(eigs_symats[[2]], paste0(filename_primer, 'scms.qs') )
