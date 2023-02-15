@@ -19,6 +19,9 @@ contacts[, table(cnt_prec,)]
 contacts[, table(cnt_prec_yn, cnt_prec_none)]
 # Edit part chracteristics ------------------------------------------------
 
+part[, dayweight := fifelse(weekday %in% c("Sunday", "Saturday"), 2/7, 5/7)]
+
+
 ## Turn age group in factor
 part[part_age_group == "Under 1", part_age_group := "0-4"]
 age_levs <- c("0-4", "5-11", "12-17", "18-29", "30-39", "40-49", "50-59", "60-69", "70-120", "Unknown")
@@ -43,8 +46,8 @@ part[, part_gender := factor(part_gender, levels = gen_levs, labels = gen_labs)]
 part[is.na(part_gender), part_gender := "Other"]
 
 ## Weekday
-day_levs <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
-day_labs <- c("Sun", "Mon", "Tue", "Wed", "Thu", "Fr", "Sat")
+day_levs <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+day_labs <- c("Mon", "Tue", "Wed", "Thu", "Fr", "Sat", "Sun")
 
 part[, weekday := factor(weekday, levels = day_levs, labels = day_labs)]
 
