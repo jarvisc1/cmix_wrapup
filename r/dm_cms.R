@@ -4,11 +4,6 @@
 
 
 library(data.table)
-library(ggplot2)
-library(viridis)
-library(cowplot)
-library(patchwork)
-
 
 # Source user written scripts ---------------------------------------------
 
