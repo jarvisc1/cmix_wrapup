@@ -17,31 +17,38 @@ cms_nl <- qs::qread("outputs/cm_data/nl_cm.qs")
 cms_ch <- qs::qread("outputs/cm_data/ch_cm.qs")
 
 ## Load eigs
-eig_uk <- unlist(qs::qread(file = "outputs/cm_data/uk_eigs.qs"))
-eig_ld1_uk <- unlist(qs::qread(file = "outputs/cm_data/uk_ld1_eigs.qs"))
-eig_be <- unlist(qs::qread(file = "outputs/cm_data/be_eigs.qs"))
-eig_nl <- unlist(qs::qread(file = "outputs/cm_data/nl_eigs.qs"))
-eig_ch <- unlist(qs::qread(file = "outputs/cm_data/ch_eigs.qs"))
+eigs_uk <- unlist(qs::qread(file = "outputs/cm_data/uk_eigs.qs"))
+eigs_ld1_uk <- unlist(qs::qread(file = "outputs/cm_data/uk_ld1_eigs.qs"))
+eigs_be <- unlist(qs::qread(file = "outputs/cm_data/be_eigs.qs"))
+eigs_nl <- unlist(qs::qread(file = "outputs/cm_data/nl_eigs.qs"))
+eigs_ch <- unlist(qs::qread(file = "outputs/cm_data/ch_eigs.qs"))
 
 ## Load pmod eigs
-pmod_eig_uk <- unlist(qs::qread(file = "outputs/cm_data/pmod_uk_eig.qs"))
-pmod_eig_be <- unlist(qs::qread(file = "outputs/cm_data/pmod_be_eig.qs"))
-pmod_eig_nl <- unlist(qs::qread(file = "outputs/cm_data/pmod_nl_eig.qs"))
-pmod_eig_ch <- unlist(qs::qread(file = "outputs/cm_data/pmod_ch_eig.qs"))
+pmod_eigs_uk <- unlist(qs::qread(file = "outputs/cm_data/pmod_uk_eigs.qs"))
+pmod_eigs_be <- unlist(qs::qread(file = "outputs/cm_data/pmod_be_eigs.qs"))
+pmod_eigs_nl <- unlist(qs::qread(file = "outputs/cm_data/pmod_nl_eigs.qs"))
+pmod_eigs_ch <- unlist(qs::qread(file = "outputs/cm_data/pmod_ch_eigs.qs"))
 
 
-rel_eig_uk <- eig_uk/pmod_eig_uk
-rel_eig_ld1_uk <- eig_ld1_uk/pmod_eig_uk
-rel_eig_be <- eig_be/pmod_eig_be
-rel_eig_nl <- eig_nl/pmod_eig_nl
-rel_eig_ch <- eig_ch/pmod_eig_ch
+rel_eigs_uk <-     eigs_uk/    pmod_eigs_uk
+rel_eigs_ld1_uk <- eigs_ld1_uk/pmod_eigs_uk
+rel_eigs_be <-     eigs_be/    pmod_eigs_be
+rel_eigs_nl <-     eigs_nl/    pmod_eigs_nl
+rel_eigs_ch <-     eigs_ch/    pmod_eigs_ch
 
 dt_eigs <- data.table(country = rep(c("UK", "BE", "NL", "CH", "UK"), each = 1000), 
                       period = c(rep("Final CoMix round", 4000), rep("1st Lockdown", 1000)),
-           ratio = c(rel_eig_uk, rel_eig_be, rel_eig_nl, rel_eig_ch, rel_eig_ld1_uk))
+           ratio = c(rel_eigs_uk, rel_eigs_be, rel_eigs_nl, rel_eigs_ch, rel_eigs_ld1_uk))
 
 dt_error <- dt_eigs[, .(med = median(ratio), l2.5 = quantile(ratio, 0.025), l97.5 = quantile(ratio, 0.975)),
         by = .(country, period)]
+
+
+be_lockdown <- data.table(country = "BE", period = "1st Lockdown", med = 0.186, `l2.5` = 0.171, `l97.5` = 0.203)
+
+dt_error <- rbind(dt_error, be_lockdown)
+
+dt_error[, country := factor(country, levels = c("CH", "NL", "BE", "UK"))]
 
 # -------------------------------------------------------------------------
 
@@ -91,7 +98,6 @@ cm_plot(cms_ch, title_ = "CH")) +
 ggplot(dt_eigs) +
   geom_boxplot(aes(x = country, y = ratio))
 
-dt_error[, country := factor(country, levels = c("CH", "NL", "BE", "UK"))]
 
 error_plot <- ggplot(dt_error) +
   geom_vline(xintercept = c(0, 0.25, 0.5, 0.75, 1), col = "grey") +
@@ -140,6 +146,6 @@ multi_plot <-  (cm_plot(cms_uk, title_ = "UK") + cm_plot(cms_be, title_ = "BE") 
 ggsave("outputs/fig3_cmatrices.png",plot = cms_plots, height = 15, width = 10)
 ggsave("outputs/fig3_cmatrices_err.png",plot = multi_plot, height = 12, width = 10)
 
-tab4_R <- dt_error %>% flextable::flextable()
+tab4_R <- flextable::flextable(dt_error)
 
 flextable::save_as_docx(tab4_R, path = "outputs/tab_rel_r.docx")
