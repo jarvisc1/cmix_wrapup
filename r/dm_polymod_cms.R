@@ -83,9 +83,14 @@ popdata_totals_uk = get_popvec(breaks, year_ = 2006, country_ = "uk")
 popdata_totals_nl = get_popvec(breaks, year_ = 2006, country_ = "nl")
 popdata_totals_be = get_popvec(breaks, year_ = 2006, country_ = "be")
 popdata_totals_ch = get_popvec(breaks, year_ = 2006, country_ = "ch")
-
+# Prem matrix
+breaks_prem=c(seq(0,75,by=5),Inf)
+popdata_totals_ch_prem = get_popvec(breaks_prem, year_ = 2006, country_ = "ch")
 
 get_domeig <- function(parts_poly_, conts_poly_, popdata_totals_) {
+  # parts_poly_<-parts_poly_uk
+  # conts_poly_<-conts_poly_uk
+  # popdata_totals_<-popdata_totals_uk
   ct_ac = get_age_table(parts = parts_poly_, conts = conts_poly_ , breaks = breaks)
   cont_per_age_per_part = ct_ac[[1]]
   all_conts = ct_ac[[2]]
@@ -95,17 +100,42 @@ get_domeig <- function(parts_poly_, conts_poly_, popdata_totals_) {
   
   max(eigen(matrix(eg_props$aug_mean_sym, nrow = (length(breaks) - 1)))$values)
 }
+# Prem version of the function (change the age-break)
+library(reshape2)
 
+get_domeig_prem <- function(prem_matrices_data_,countryname_,popdata_totals_) {
+  # prem_matrices_data_<-prem_matrices 
+  # countryname_<-"CHE"
+  # popdata_totals_<-popdata_totals_ch_prem
+  eg=prem_matrices_data_[[countryname_]]
+  dum<-cut(0,breaks_prem,right=FALSE)
+  dum_names<-levels(dum)
+  colnames(eg)<-dum_names
+  rownames(eg)<-dum_names
+  eg<-reshape2::melt(eg)
+  colnames(eg)<-c("age_group","age_group_cont","means")
+  eg<-data.table(eg)
+  eg_props = symetricise_matrix(eg = eg,popdata_totals=popdata_totals_,breaks = breaks_prem)
+  max(eigen(matrix(eg_props$aug_mean_sym, nrow = (length(breaks_prem) - 1)))$values)
+}
 
 pmod_eig_uk <- get_domeig(parts_poly_uk, conts_poly_uk, popdata_totals_uk)
 pmod_eig_nl <- get_domeig(parts_poly_nl, conts_poly_nl, popdata_totals_nl)
 pmod_eig_be <- get_domeig(parts_poly_be, conts_poly_be, popdata_totals_be)
-pmod_eig_ch <- get_domeig(parts_poly, conts_poly, popdata_totals_uk)
+pmod_eig_ch <- get_domeig(parts_poly, conts_poly, popdata_totals_ch)
+
+load("./data/prem_contact_all.rdata")
+prem_matrices<-contact_all
+rm("contact_all")
+prem_eig_ch <- get_domeig_prem(prem_matrices, "CHE", popdata_totals_ch_prem)
+
 
 qs::qsave(pmod_eig_uk, file = "outputs/cm_data/pmod_uk_eig.qs")
 qs::qsave(pmod_eig_be, file = "outputs/cm_data/pmod_be_eig.qs")
 qs::qsave(pmod_eig_nl, file = "outputs/cm_data/pmod_nl_eig.qs")
 qs::qsave(pmod_eig_ch, file = "outputs/cm_data/pmod_ch_eig.qs")
+
+qs::qsave(prem_eig_ch, file = "outputs/cm_data/prem_ch_eig.qs")
 
 
 

@@ -28,6 +28,10 @@ popdata_be = get_popvec(breaks, year_ = 2020, country_ = "be")
 popdata_nl = get_popvec(breaks, year_ = 2020, country_ = "nl")
 popdata_ch = get_popvec(breaks, year_ = 2020, country_ = "ch")
 
+# Prem version
+breaks_prem=c(seq(0,75,by=5),Inf)
+popdata_ch_prem = get_popvec(breaks_prem, year_ = 2020, country_ = "ch")
+
 
 # Get UK ------------------------------------------------------------------
 puk <- parts[country == "uk"]
@@ -57,10 +61,16 @@ cms_be = calc_cm(pbe, cbe, max_ = 50, weeks_range = 1000, pop_data_ = popdata_be
 cms_nl = calc_cm(pnl, cnl, max_ = 50, weeks_range = 1000, pop_data_ = popdata_nl)
 cms_ch = calc_cm(pch, cch, max_ = 50, weeks_range = 1000, pop_data_ = popdata_ch)
 
+cms_ch_prem = calc_cm(pch, cch, max_ = 50, weeks_range = 1000, pop_data_ = popdata_ch_prem)
+
+
+
 qs::qsave(cms_uk, file = "outputs/cm_data/uk_cm.qs")
 qs::qsave(cms_be, file = "outputs/cm_data/be_cm.qs")
 qs::qsave(cms_nl, file = "outputs/cm_data/nl_cm.qs")
 qs::qsave(cms_ch, file = "outputs/cm_data/ch_cm.qs")
+
+qs::qsave(cms_ch_prem, file = "outputs/cm_data/ch_cm_prem.qs")
 
 
 # Get the dominant eigenvalues --------------------------------------------
@@ -69,15 +79,22 @@ cms_be_bs = calc_cm_bs(pbe, cbe, max_ = 50, weeks_range = 1000, pop_data_ = popd
 cms_nl_bs = calc_cm_bs(pnl, cnl, max_ = 50, weeks_range = 1000, pop_data_ = popdata_nl, bs = 1000)
 cms_ch_bs = calc_cm_bs(pch, cch, max_ = 50, weeks_range = 1000, pop_data_ = popdata_ch, bs = 1000)
 
+
+cms_ch_prem_bs = calc_cm_prem_bs(pch, cch, max_ = 50, weeks_range = 1000, pop_data_ = popdata_ch_prem, bs = 1000)
+
 eig_uk <- cms_uk_bs[[2]][1000][[1]][1]
 eig_be <- cms_be_bs[[2]][1000][[1]][1]
 eig_nl <- cms_nl_bs[[2]][1000][[1]][1]
 eig_ch <- cms_ch_bs[[2]][1000][[1]][1]
 
+eig_ch_prem <- cms_ch_prem_bs[[2]][1000][[1]][1]
+
 qs::qsave(eig_uk, file = "outputs/cm_data/uk_eigs.qs")
 qs::qsave(eig_be, file = "outputs/cm_data/be_eigs.qs")
 qs::qsave(eig_nl, file = "outputs/cm_data/nl_eigs.qs")
 qs::qsave(eig_ch, file = "outputs/cm_data/ch_eigs.qs")
+
+qs::qsave(eig_ch_prem, file = "outputs/cm_data/ch_prem_eigs.qs")
 
 ## First LD UK
 cms_uk_ld1_bs = calc_cm_bs(puk, cuk, max_ = 50, weeks_range = 1, pop_data_ = popdata_uk, bs = 1000)
