@@ -15,7 +15,7 @@ contacts <- contacts[survey_round == 1000 ]
 
 
 contacts[, table(cnt_prec_yn)]
-contacts[, table(cnt_prec,)]
+contacts[, table(cnt_prec)]
 contacts[, table(cnt_prec_yn, cnt_prec_none)]
 # Edit part chracteristics ------------------------------------------------
 
