@@ -210,6 +210,48 @@ calc_cm_bs <- function(parts_ , conts_, max_ = 1000, pop_data_ = popdata_totals,
   return(list(outs_weekday[[1]], egs))
 }
 
+calc_cm_prem_bs <- function(parts_ , conts_, max_ = 1000, pop_data_ = popdata_totals, weeks_range=23:33, outfolder='outputs/regular/', bs = 1){
+  
+  
+  conts_weekday = conts_[!weekday %in% c('Saturday', 'Sunday')]
+  conts_weekend = conts_[weekday %in% c('Saturday', 'Sunday')]
+  parts_weekday = parts_[!weekday %in% c('Saturday', 'Sunday')]
+  parts_weekend = parts_[weekday %in% c('Saturday', 'Sunday')]
+  
+  egs <- list()
+  
+  # with weighting for weekend / weekday
+  for(week in weeks_range){
+    i = week 
+    #print(i)
+    weeks <- c(week, week + 1)
+    if(i %in% c(1:6, 17,18))  weeks <- c(weeks, 700)
+    
+    ct_ac_weekend = get_age_table(conts_weekend, parts_weekend, weeks, breaks_prem)
+    cont_per_age_per_part_weekend  = ct_ac_weekend[[1]]
+    all_conts_weekend  = ct_ac_weekend[[2]]
+    
+    ct_ac_weekday = get_age_table(conts_weekday, parts_weekday, weeks, breaks_prem)
+    cont_per_age_per_part_weekday  = ct_ac_weekday[[1]]
+    all_conts_weekday  = ct_ac_weekday[[2]]
+    
+    outs_weekend = get_matrix_bs(cont_per_age_per_part_weekend, breaks_prem, max_, bs = bs)
+    outs_weekday = get_matrix_bs(cont_per_age_per_part_weekday, breaks_prem, max_, bs = bs)
+    
+    mus = (outs_weekend[[2]] * 2./7) + (outs_weekday[[2]] * 5./7)
+    
+    
+    eigs_symats = get_eigs_from_means(data.table(outs_weekday[[1]]), mus, pop_data_, breaks_prem)
+    filename_primer = paste0(outfolder, format(lubridate::today(),"%Y%m%d" ),'_cap', max_, '_nwks', length(weeks),'_sr', week, '_bs_',bs)
+    qs::qsave(eigs_symats[[1]], paste0(filename_primer, 'eigs.qs') )
+    qs::qsave(eigs_symats[[2]], paste0(filename_primer, 'scms.qs') )
+    
+    
+    
+    egs[[i]] <- eigs_symats
+  }
+  return(list(outs_weekday[[1]], egs))
+}
 
 
 
