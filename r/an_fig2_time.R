@@ -5,7 +5,7 @@ library(data.table)
 library(ggplot2)
 library(patchwork)
 library(socialmixr)
-
+library(forcats)
 
 # Load data ---------------------------------------------------------------
 cnts <- qs::qread('data/wrapup_contacts.qs')
@@ -63,8 +63,8 @@ pmod_phy_time <- conts_poly[!is.na(cnt_total_time), .(.N, perc = sum(cnt_phys ==
 
 # Total time --------------------------------------------------------------
 p_time_phys <- ggplot(cnts[!is.na(cnt_total_time)]) +
-  geom_bar(aes(x = cnt_total_time, fill = cnt_phys), position = "fill") +
-  geom_point(data = pmod_phy_time, aes(y = perc, x = cnt_total_time,
+  geom_bar(aes(x = cnt_total_time, fill = fct_rev(cnt_phys)), position = "fill") +
+  geom_point(data = pmod_phy_time, aes(y = 1-perc, x = cnt_total_time,
                                        pch = "POLYMOD", col = "POLYMOD"),
              size = 3) +
   geom_hline(yintercept = seq(0,1, 0.1), col = "white") +
@@ -81,9 +81,9 @@ p_time_phys <- ggplot(cnts[!is.na(cnt_total_time)]) +
         strip.text.x = element_text(angle = 0, hjust = 0))
 
 p_time_prec <- ggplot(cnts[!is.na(cnt_total_time) & !is.na(cnt_prec_2m_plus)]) +
-  geom_bar(aes(x = cnt_total_time, fill = cnt_prec_2m_plus), position = "fill") +
+  geom_bar(aes(x = cnt_total_time, fill = fct_rev(cnt_prec_2m_plus)), position = "fill") +
   geom_hline(yintercept = seq(0,1, 0.1), col = "white") +
-  scale_fill_manual(values = c("darkred", "grey"), name = "") +
+  scale_fill_manual(values = c("Yes" = "darkred", "No" = "grey"), name = "") +
   scale_y_continuous(expand = expansion(0),
                      labels = scales::percent_format(accuracy = 1)) +
   labs(x = "", y = "%", subtitle = "B: 2 meter distance?") +
@@ -95,9 +95,9 @@ p_time_prec <- ggplot(cnts[!is.na(cnt_total_time) & !is.na(cnt_prec_2m_plus)]) +
         strip.text.x = element_text(angle = 0, hjust = 0))
 
 p_time_prec_mask <- ggplot(cnts[!is.na(cnt_total_time)]) +
-  geom_bar(aes(x = cnt_total_time, fill = cnt_prec_mask), position = "fill") +
+  geom_bar(aes(x = cnt_total_time, fill = fct_rev(cnt_prec_mask)), position = "fill") +
   geom_hline(yintercept = seq(0,1, 0.1), col = "white") +
-  scale_fill_manual(values = c("darkred", "grey"), name = "") +
+  scale_fill_manual(values = c("Yes" = "darkred", "No" = "grey"), name = "") +
   scale_y_continuous(expand = expansion(0),
                      labels = scales::percent_format(accuracy = 1)) +
   labs(x = "", y = "%", subtitle = "C: Wore a mask?") +
@@ -109,9 +109,9 @@ p_time_prec_mask <- ggplot(cnts[!is.na(cnt_total_time)]) +
         strip.text.x = element_text(angle = 0, hjust = 0))
 
 p_time_prec_outside <- ggplot(cnts[!is.na(cnt_total_time) & !is.na(cnt_outside)]) +
-  geom_bar(aes(x = cnt_total_time, fill = cnt_outside), position = "fill") +
+  geom_bar(aes(x = cnt_total_time, fill = fct_rev(cnt_outside)), position = "fill") +
   geom_hline(yintercept = seq(0,1, 0.1), col = "white") +
-  scale_fill_manual(values = c("darkred", "grey"), name = "") +
+  scale_fill_manual(values = c("Yes" = "darkred", "No" = "grey"), name = "") +
   scale_y_continuous(expand = expansion(0),
                      labels = scales::percent_format(accuracy = 1)) +
   labs(x = "", y = "%", subtitle = "D: Met outside?") +
