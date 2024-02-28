@@ -47,14 +47,15 @@ eigs_ch_prem <- unlist(qs::qread(file = "./outputs/cm_data/ch_prem_eigs.qs"))
 pmod_eigs_uk <- unlist(qs::qread(file = "./outputs/cm_data/pmod_uk_eigs.qs"))
 pmod_eigs_be <- unlist(qs::qread(file = "./outputs/cm_data/pmod_be_eigs.qs"))
 pmod_eigs_nl <- unlist(qs::qread(file = "./outputs/cm_data/pmod_nl_eigs.qs"))
-pmod_eigs_ch <- unlist(qs::qread(file = "./outputs/cm_data/pmod_ch_eigs.qs"))
+prem_eigs_ch <- unlist(qs::qread(file = "./outputs/cm_data/prem_ch_eig.qs"))
 
 
 rel_eigs_uk <-     eigs_uk/    pmod_eigs_uk
 rel_eigs_ld1_uk <- eigs_ld1_uk/pmod_eigs_uk
 rel_eigs_be <-     eigs_be/    pmod_eigs_be
 rel_eigs_nl <-     eigs_nl/    pmod_eigs_nl
-rel_eigs_ch <-     eigs_ch/    pmod_eigs_ch
+#rel_eigs_ch <-     eigs_ch/    pmod_eigs_ch
+rel_eigs_ch <-     eigs_ch_prem/    prem_eigs_ch
 
 dt_eigs <- data.table(country = rep(c("UK", "BE", "NL", "CH", "UK"), each = 1000), 
                       period = c(rep("Final CoMix round", 4000), rep("1st Lockdown", 1000)),
