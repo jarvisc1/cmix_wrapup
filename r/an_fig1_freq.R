@@ -129,5 +129,5 @@ p_freq <- (p_freq_phys | p_freq_prec | p_freq_prec_mask | p_freq_prec_outside) +
     guides = "collect")  & theme(legend.position = "bottom")
 
 
-ggsave(filename = "Outputs/fig1_bar_freq.png", plot = p_freq, height = 10, width = 12) 
+ggsave(filename = "outputs/fig1_bar_freq.png", plot = p_freq, height = 10, width = 12) 
 

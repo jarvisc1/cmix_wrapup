@@ -129,5 +129,5 @@ p_time <- (p_time_phys | p_time_prec | p_time_prec_mask | p_time_prec_outside) +
     guides = "collect")  & theme(legend.position = "bottom")
 
 
-ggsave(filename = "Outputs/fig2_bar_time.png", plot = p_time, height = 10, width = 12) 
+ggsave(filename = "outputs/fig2_bar_time.png", plot = p_time, height = 10, width = 12) 
 

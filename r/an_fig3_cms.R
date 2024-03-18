@@ -58,7 +58,7 @@ rel_eigs_nl <-     eigs_nl/    pmod_eigs_nl
 rel_eigs_ch <-     eigs_ch_prem/    prem_eigs_ch
 
 dt_eigs <- data.table(country = rep(c("UK", "BE", "NL", "CH", "UK"), each = 1000), 
-                      period = c(rep("Final CoMix round", 4000), rep("1st Lockdown", 1000)),
+                      period = c(rep("Final CoMix round (2023)", 4000), rep("1st Lockdown (2020)", 1000)),
            ratio = c(rel_eigs_uk, rel_eigs_be, rel_eigs_nl, rel_eigs_ch, rel_eigs_ld1_uk))
 
 dt_error <- dt_eigs[, .(med = median(ratio), l2.5 = quantile(ratio, 0.025), l97.5 = quantile(ratio, 0.975)),
@@ -80,7 +80,7 @@ cm_plot_prem<- function(cms_, title_ = "All"){
   tick_labels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49","50-54","55-59","60-64","65-69","70-74","75+")
   ggplot(cms_[[1]], aes(age_group, age_group_cont, fill= means)) + 
     geom_tile() + 
-    scale_fill_viridis(discrete=FALSE, name='Mean \nContacts', trans = "log",
+    scale_fill_viridis(discrete=FALSE, name='Mean \nContacts\n (daily)', trans = "log",
                        breaks = my_breaks, labels = my_breaks_lab, limits = c(0.02,10))+ 
     ggtitle(title_) +
       geom_text(aes(label = round(means,1)),size = 3,
