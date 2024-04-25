@@ -65,7 +65,7 @@ dt_error <- dt_eigs[, .(med = median(ratio), l2.5 = quantile(ratio, 0.025), l97.
         by = .(country, period)]
 
 
-be_lockdown <- data.table(country = "BE", period = "1st Lockdown", med = 0.186, `l2.5` = 0.171, `l97.5` = 0.203)
+be_lockdown <- data.table(country = "BE", period = "1st Lockdown (2020)", med = 0.186, `l2.5` = 0.171, `l97.5` = 0.203)
 
 dt_error <- rbind(dt_error, be_lockdown)
 
@@ -80,7 +80,7 @@ cm_plot_prem<- function(cms_, title_ = "All"){
   tick_labels = c("0-4","5-9","10-14","15-19","20-24","25-29","30-34","35-39","40-44","45-49","50-54","55-59","60-64","65-69","70-74","75+")
   ggplot(cms_[[1]], aes(age_group, age_group_cont, fill= means)) + 
     geom_tile() + 
-    scale_fill_viridis(discrete=FALSE, name='Mean \nContacts\n (daily)', trans = "log",
+    scale_fill_viridis(discrete=FALSE, name='Mean \nContacts \n(per person \nper day)', trans = "log",
                        breaks = my_breaks, labels = my_breaks_lab, limits = c(0.02,10))+ 
     ggtitle(title_) +
       geom_text(aes(label = round(means,1)),size = 3,
@@ -112,7 +112,7 @@ cm_plot <- function(cms_, title_ = "All"){
                   "40-49", "50-59", "60-69", "70+")
   ggplot(cms_[[1]], aes(age_group, age_group_cont, fill= means)) + 
     geom_tile() + 
-    scale_fill_viridis(discrete=FALSE, name='Mean \nContacts', trans = "log",
+    scale_fill_viridis(discrete=FALSE, name='Mean \nContacts \n(per person \nper day)', trans = "log",
                        breaks = my_breaks, labels = my_breaks_lab, limits = c(0.02,10))+ 
     ggtitle(title_) +
     geom_text(aes(label = round(means,1)),
