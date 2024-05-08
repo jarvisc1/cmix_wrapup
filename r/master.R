@@ -28,7 +28,7 @@ source("r/an_fig2_time.R")
 
 ## Creating the contact matrices
 
-##source("r/dm_cms.R") ## This wil take a while to run because of bootstraps
+##source("r/dm_cms.R") ## This will take a while to run because of bootstraps
 source("r/dm_polymod_cms.R")
 
 source("r/an_fig3_cms.R")
