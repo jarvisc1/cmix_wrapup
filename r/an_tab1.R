@@ -57,7 +57,7 @@ dt <- dt[, .(
 
 ## Fixing part_employed to include unemployment and retired
 dt[grepl("unemp",dt$part_employstatus), part_employed := "Unemployed"]
-dt[dt$part_employstatus=="full-time parent, homemaker", part_employed := "Unemployed"]
+dt[dt$part_employstatus=="full-time parent homemaker", part_employed := "Unemployed"]
 dt[dt$part_employstatus=="long-term sick or disabled", part_employed := "Unemployed"]
 dt[dt$part_employstatus=="student/pupil", part_employed := "Unemployed"]
 dt[dt$part_employstatus=="retired", part_employed := "Retired"]
@@ -70,7 +70,7 @@ dt[, part_symp_ache := max(part_symp_bodyaches,
                            na.rm = TRUE),
    by = part_uid]
 
-dt[, part_symp_fatigue := as.numeric(part_symp_fatigue)]
+dt[, part_symp_fatigue := as.integer(part_symp_fatigue)]
 
 dt[, part_symp_any := max(part_symp_fever,
                           part_symp_cough,
@@ -78,7 +78,7 @@ dt[, part_symp_any := max(part_symp_fever,
                           part_symp_ache,
                           part_symp_congestion,
                           part_symp_sore_throat,
-                          part_symp_fatigue, na.rm = TRUE),
+                          part_symp_fatigue),
    by = part_uid]
 
 dt_copy <- dt

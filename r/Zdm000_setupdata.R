@@ -5,12 +5,49 @@ library(data.table)
 library(lubridate)
 
 # Load participant data ---------------------------------------------------
-part <- qs::qread("../comix/data/part.qs")
-contacts <- qs::qread("../comix/data/contacts.qs")
+#part <- qs::qread("../comix/data/part.qs")
+input_folder<-"./data/zenodo/"
+fname=paste0(input_folder,"CoMix_last_wave_participant_common.csv")
+part_data_common<-read.csv(file=fname)
+fname=paste0(input_folder,"CoMix_last_wave_participant_extra.csv")
+part_data_extra<-read.csv(file=fname)
+part<-merge(part_data_common,part_data_extra)
 
-## Reduce to latest data
-# part <- part[survey_round == 1000 | survey_round %in% 97:101]
-contacts <- contacts[survey_round == 1000 ]
+
+fname=paste0(input_folder,"CoMix_last_wave_hh_common.csv")
+hh_common<-read.csv(file=fname)
+#generate part_id removing from hh_id the string "HH_"
+hh_common$part_id<-gsub("HH_","",hh_common$hh_id)
+
+part<-merge(part,hh_common,by="part_id")
+
+
+
+fname=paste0(input_folder,"CoMix_last_wave_sday.csv")
+sday<-read.csv(file=fname)
+part<-merge(part,sday,by="part_id")
+part<-data.table(part)
+### Rename part variables
+part$part_wave_uid<-part$part_id
+part$part_age_group<-part$part_age
+# Transform weekday into a factor with explicit name day
+part$weekday<-part$dayofweek
+wday_levs <- c(0,1,2,3,4,5,6)
+wday_labs <- c("Sunday","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+
+part[, weekday := factor(weekday, levels = wday_levs, labels = wday_labs)]
+
+
+
+
+fname=paste0(input_folder,"CoMix_last_wave_contact_common.csv")
+cont_data_common<-read.csv(file=fname)
+fname=paste0(input_folder,"CoMix_last_wave_contact_extra.csv")
+cont_data_extra<-read.csv(file=fname)
+contacts<-merge(cont_data_common,cont_data_extra)
+contacts<-data.table(contacts)
+
+
 
 
 
@@ -31,7 +68,7 @@ part[, part_age_group := factor(part_age_group, levels = age_levs, labels = age_
 
 
 ## Clean up age so adults aren't children and otherwise
-part[sample_type == "child" & !is.na(part_age), part_age_group := NA]
+part[sample_type == "child" & part_age_group %in% c("18-29", "30-39", "40-49", "50-59", "60-69", "70+"), part_age_group := "Unknown"]
 part[is.na(part_age_group), part_age_group := "Unknown"]
 
 part[sample_type == "adult" & part_age_group %in% c("0-4","5-11","12-17"), part_age_group := "Unknown"]
@@ -39,7 +76,7 @@ part[sample_type == "adult" & part_age_group %in% c("0-4","5-11","12-17"), part_
 part[, table(part_age_group, country)]
 
 ## Gender
-gen_levs <- c("female", "male", "other")
+gen_levs <- c("F", "M", "other")
 gen_labs <- c("Female", "Male", "Other")
 
 part[, part_gender := factor(part_gender, levels = gen_levs, labels = gen_labs)]
@@ -89,9 +126,17 @@ part[part_employstatus=="self employed", part_employed := "Self employed"]
 part[part_work_closed == "no", part_work_place := "open"]
 part[part_work_closed == "yes", part_work_place := "closed"]
 
+# Set order perception variables
+perc_levs <- c("Strongly agree","Tend to agree","Neither agree nor disagree","Tend to disagree","Strongly disagree","Don’t know")
+perc_labs <- c("Strongly agree","Tend to agree","Neither agree nor disagree","Tend to disagree","Strongly disagree","Don’t know")
+
+part[, part_att_likely := factor(part_att_likely, levels = perc_levs, labels = perc_labs,ordered=TRUE)]
+part[, part_att_serious := factor(part_att_serious, levels = perc_levs, labels = perc_labs,ordered=TRUE)]
+part[, part_att_spread := factor(part_att_spread, levels = perc_levs, labels = perc_labs,ordered=TRUE)]
+
 
 # Merge on total contacts ------------------------------------------------------
-p_cnts <- qs::qread('../comix/data/part_cnts.qs')
+p_cnts <- qs::qread('./data/part_cnts.qs')
 
 # Add on contacts ---------------------------------------------------------
 dt <- merge(part, p_cnts, by = "part_wave_uid", all.x = TRUE)
